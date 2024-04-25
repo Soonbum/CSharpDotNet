@@ -39,12 +39,18 @@
   - 과거 닷넷 프레임워크가 구현한 CLR은 CLI 사양을 따르는 대표적인 VM이었다.
   - 이후 닷넷 코어가 나오면서 다중 플랫폼에 맞게 재구현한 CoreCLR이 나왔다.
  
-* 닷넷
+* 닷넷 프레임워크, 닷넷 코어, 그리고 닷넷
   - 닷넷 = CoreCLR + 부가 구성 요소
   - 부가 구성요소로는 BCL(Base Class Library)와 기타 파일들이 있다.
   - 히스토리: "닷넷 프레임워크"가 처음에 등장, 다중 플랫폼 지원을 위해 "닷넷 코어"가 등장했다가 "닷넷"으로 통합됨
   - 닷넷 프레임워크는 4.8까지 나왔고, 닷넷 코어는 3.1까지 나왔으며, 닷넷은 5, 8, 7, 8 순서로 나왔다. (2024년 상반기)
   - 리눅스, Mac OS X, Android, iOS 등을 지원하며 모바일(Xamarin / .NET MAUI 프레임워크, Unity 게임 엔진)도 지원한다.
+
+| 설명 | .NET Framework | .NET Core |
+| --- | --------------- | --------- |
+| 플랫폼 | Windows | Linux, Mac OS X 등 |
+| 앱 유형 | WPF, ASP.NET, Windows Forms | UWP, ASP.NET Core |
+| 기반 라이브러리 | Base Class Library | Core Library |
 
 ## C# 기초
 
