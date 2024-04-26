@@ -194,6 +194,83 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 ## BCL (Base Class Library)
 
+* __여기서 소개할 BCL 타입들은 일부에 불과하다. (자세한 것은 .NET API browser 참고할 것)__
+
+### 시간
+
+* System.DateTime
+* System.TimeSpan
+* System.Diagnostics.Stopwatch
+
+### 문자열 처리
+
+* System.String
+* System.Text.StringBuilder
+* System.Text.Encoding
+* System.Text.RegularExpressions.Regex
+
+### 직렬화/역직렬화
+
+* System.BitConverter
+* System.IO.MemoryStream
+* System.IO.StreamWriter / System.IO.StreamReader
+* System.IO/BinaryWriter / System.IO/BinaryReader
+* System.Xml.Serialization.XmlSerializer
+* System.Text.Json.JsonSerializer
+
+### 컬렉션
+
+* System.Collections.ArrayList
+* System.Collections.Hashtable
+* System.Collections.SortedList
+* System.Collections.Stack
+* System.Collections.Queue
+
+### 파일
+
+* System.IO.FileStream
+* System.IO.File / System.IO.FileInfo
+* System.IO.Directory / System.IO.DirectoryInfo
+* System.IO.Path
+
+### 스레딩
+
+* System.Threading.Thread
+* System.Threading.Monitor
+* System.Threading.Interlocked
+* System.Threading.ThreadPool
+* System.Threading.EventWaitHandle
+* 비동기 호출
+* System.Delegate의 비동기 호출
+
+### 네트워크 통신
+
+* System.Net.IPAddress
+* 포트
+* System.Net.IPEndPoint
+* System.Net.Dns
+* System.Net.Sockets.Socket
+* System.Net.Http.HttpClient
+
+### 데이터베이스
+
+* 마이크로소프트 SQL 서버
+* ADO.NET 데이터 제공자
+* 데이터 컨테이너
+* 데이터베이스 트랜잭션
+
+### 리플렉션
+
+* AppDomain과 Assembly
+* Type과 리플렉션
+* 리플렉션을 이용한 확장 모듈 구현
+
+### 기타
+
+* 윈도우 레지스트리
+* BigInteger
+* IntPtr
+
 ## C# 2.0
 
 ## C# 3.0
