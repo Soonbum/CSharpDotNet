@@ -79,6 +79,119 @@
 
 ## C# 1.0
 
+### 문법 요소
+
+* 전처리기 지시문: 특정 소스코드를 상황에 따라 컴파일 과정에서 추가/삭제할 때 사용한다.
+  - #define, #undef: 소스코드 맨 위에 있어야 함
+  - #if, #elif, #else, #endif: 적용되는 부분에 기록함
+  - 그 외에도 #warning, #error, #line, #region, #endregion, #pragma 지시문이 있다.
+
+* 지역 변수의 유효 범위: 지역 변수가 정의되면 변수를 포함하는 블록에서만 유효하다.
+
+* 일반적인 애트리뷰트: 소스 외의 정보이며 메타데이터 정보에 포함됨, 프로그램에 영향을 끼치지 않으나 개발자가 정보를 남길 수 있음
+  - System.Attribute로부터 상속 받은 클래스이다.
+  - 형태는 다음과 같다: [AuthorAttribute], [Author], [Author()], [Author("Anders")], [Author("Anders", Version = 1)], ...
+  - 생성자, 프로퍼티를 이용해 값을 지정할 수도 있다.
+  - Reflection 기술과 함께 응용하여 사용될 수 있다.
+
+* Flags 애트리뷰트
+  - System.AttributeUsageAttribute는 다른 애트리뷰트와 달리 적용할 수 있는 대상이 한정되어 있다.
+  - AttributeTargets 값의 종류의 각 타깃은 다음과 같다. (생략하면 다음 표에 따라 자동으로 선택됨)
+  - 다만 타깃을 명시적으로 지정해야 하는 경우도 있다. (예를 들어, BCL의 MarshalAs 애트리뷰트는 타깃이 Field, Paramter, ReturnValue가 있으므로 직접 명시해야 함)
+
+AttributeTargets 값 | [target: ...] | 설명
+------------------- | ------------- | ---------
+Assembly | assembly | 어셈블리
+Module | module | 모듈
+Class | type | class
+Struct | type | struct
+Enum | type | enum
+Constructor | method | 타입의 생성자
+Method | method | 타입의 메서드
+Property | property | 타입의 프로퍼티
+Field | field | 타입의 필드(멤버)
+Event | event | 타입의 이벤트
+Interface | type | interface
+Parameter | param | 메서드의 파라미터
+Delegate | type | delegate
+ReturnValue | return | 메서드의 리턴값
+GenericParameter | typevar | C# 2.0에 추가된 제네릭 파라미터에 지정됨
+All | 기본값 | AttributeTargets에 정의된 모든 것
+
+* 연산자
+  - 시프트 연산자: 비트 단위로 데이터를 제어할 때 사용함 (<<, >>)
+  - 비트 논리 연산자: 조건 논리 연산자(&&, ||, ^, !) 외에도 비트 논리 연산자(&, |, ^, ~)가 존재한다.
+ 
+* 예약어
+  - 연산 범위 확인: checked, unchecked (이 키워드 다음에 {}로 감싸면, 오버플로에 대한 예외를 발생 혹은 발생시키지 않음. 단, 언더플로는 체크 못함)
+  - 가변 파라미터: params (함수 인자로 params 키워드 다음에 가변 배열 변수를 입력 받으면 임의의 개수를 인자로 받을 수 있다. C++의 va_list 개념)
+  - Win32 API 호출: extern (C#에서 C/C++ 언어로 만들어진 비관리 코드의 기능을 사용할 때 platform invocation을 사용함)
+    * 예를 들어, User32.dll 파일의 BOOL MessageBeep([in] UINT uTYPE) 함수를 호출한다고 해보자.
+      ```cpp
+      [DllImport("user32.dll")]
+      static extern int MessageBeep(uint uType);
+      ```
+    * Win32 API에 대한 PInvoke 구문은 www.pinvoke.net 사이트에서 검색해 볼 수 있다.
+  - 안전하지 않은 컨텍스트: unsafe (스택에 할당된 변수에 대해 C/C++ 언어의 포인터를 사용할 때 이 키워드를 맨앞에 붙임)
+  - 참조 형식의 멤버에 대한 포인터: fixed (힙에 할당된 인스턴스에 대해 C/C++ 언어의 포인터를 사용할 때 이 키워드를 맨앞에 붙임)
+  - 고정 크기 버퍼: fixed (위와 기능이 다름, extern으로 참조한 C++ DLL 함수에 인자를 넘길 때 메모리 배열 길이로 인한 오류를 막기 위해 unsafe 문맥에서 변수 앞에 사용함)
+  - 스택을 이용한 값 형식 배열: stackalloc (값 형식의 배열을 힙이 아닌 스택에 강제로 할당하게 만듦, 스택은 용량이 적지만 빠름)
+    ```cpp
+    int* pArray = stackalloc int[1024];  // int 4byte * 1024 == 4KB 용량을 스택에 할당
+    ```
+
+### 프로젝트 구성
+
+* 솔루션 (.sln)
+  - 1개 이상의 프로젝트를 포함하고 있다.
+  - 솔루션이 오피스 제품이라면, 프로젝트는 워드, 엑셀, 파워포인트, 아웃룩이라고 비유할 수 있다.
+
+* 프로젝트 (.csproj)
+  - 비주얼 스튜디오의 소스코드 관리를 위해 도입된 개념
+  - 한 프로젝트 당 여러 개의 소스코드를 담을 수 있으며, 하나의 프로젝트는 하나의 EXE 또는 DLL 파일이 만들어진다. (내부적으로 XML 형식으로 기록되어 있음)
+
+* 라이브러리 재참조
+  - 본인이 만든 라이브러리, 닷넷이 제공하는 라이브러리, NuGet 패키지를 통해 받은 라이브러리를 활용할 수 있다.
+
+* 디버그 빌드, 릴리스 빌드
+  - 릴리스 빌드: 사용자에게 출시할 때에는 릴리스 빌드를 활용한다. (최적화 포함, 전처리 상수 TRACE 사용함)
+  - 디버그 빌드: 개발 중에는 디버그 빌드를 활용한다. (최적화 없음, 전처리 상수 DEBUG/TRACE 사용함)
+    * 전처리 상수 대신 [Conditional("DEBUG")] 애트리뷰트 등을 사용해도 됨
+    * 그 외에도 System.Diagnostics 네임스페이스에서 Debug, Trace 타입의 WriteLine 함수를 이용해 Debug, Trace 메시지를 따로 출력할 수 있다. (DebugView 프로그램 활용 가능)
+
+* 플랫폼 선택
+  - 닷넷 런타임은 인텔/AMD CPU, ARM CPU를 지원하며, 그 외에도 모든 CPU를 지원한다. (x86/x64, ARM32/ARM64, AnyCPU)
+
+### 예외
+
+* 예외
+  - 대표적인 예외로는 0으로 나누거나, 배열 범위를 벗어나거나, null을 참조하는 등이 있다.
+  - System.Exception 타입이 제공하는 멤버는 다음과 같다.
+    * Message (프로퍼티): 예외를 설명하는 메시지를 리턴한다.
+    * Source (프로퍼티): 예외를 발생시킨 애플리케이션의 이름을 리턴한다.
+    * StackTrace (프로퍼티): 예외가 발생한 메서드의 호출 스택을 리턴한다.
+    * ToString (메서드): Message, StackTrace 내용을 포함하는 문자열을 리턴한다.
+  - 개발자는 System.Exception에서 상속해서 예외를 직접 만들 수도 있다.
+
+* 예외 처리 및 발생
+  - try/catch/finally 구문을 이용해서 예외가 발생해도 프로그램이 중단되지 않도록 할 수 있다.
+  - throw 구문을 이용해서 예외를 발생시킬 수도 있다.
+  - 다만 예외 처리는 무겁기 때문에 가능하면 다른 방법을 사용해서 회피하는 것이 좋다.
+  - 참고: using 키워드는 try/finally/Dispose에 대한 간편 표기법으로 사용된다. (네임스페이스를 선언하는 using과 다름)
+
+### 가비지 수집기
+
+* 가비지 수집기 (Garbage Collector)
+  - 가비지 수집기 작동 원리
+    * CLR에서 처음 할당되는 객체는 모두 0세대에 속한다.
+    * 0세대 객체의 용량이 일정 크기를 넘어가면 GC는 가비지 수집을 한다. --> 사용되지 않는 0세대 객체는 없애고, 사용되는 객체는 1세대로 승격된다.
+    * 1세대 객체의 총 용량이 일정 크기를 넘어가면 GC는 가비지 수집을 한다. --> 사용되지 않는 객체는 없애고, 1세대의 객체가 그 시점에도 사용되고 있으면 2세대로 승격된다. (2세대가 끝)
+    * 2세대 객체의 총 용량이 일정 크기를 넘어가면 GC는 가비지 수집을 한다.
+  - 가비지 수집을 하면 객체를 가리키는 주소값이 변경될 수 있다.
+  - 단, 일정 크기의 객체는 가비지 수집마다 이동하면 성능이 크게 손실되므로 별도의 대용량 객체 힙(Oarge Object Heap)에 생성된다.
+    * 주소는 바뀌지 않는 대신 메모리 파편화 현상이 발생한다.
+    * 대용량 객체는 처음부터 2세대 객체로 분류한다.
+
 ## BCL (Base Class Library)
 
 ## C# 2.0
