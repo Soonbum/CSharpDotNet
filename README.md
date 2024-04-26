@@ -218,13 +218,13 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 * System.DateTime
 * System.TimeSpan
-* System.Diagnostics.Stopwatch
+* System.Diagnostics.Stopwatch: 코드의 특정 구간에 대한 성능을 측정할 때 사용할 것
 
 ### 문자열 처리
 
 * System.String
-* System.Text.StringBuilder
-* System.Text.Encoding
+* System.Text.StringBuilder: 문자열을 연결하는 작업이 많을 때 사용할 것
+* System.Text.Encoding: ASCII, Default, Unicode (UTF-16을 의미함), UTF32, UTF8 등이 있음
 * System.Text.RegularExpressions.Regex
 
 ### 직렬화/역직렬화
@@ -258,8 +258,8 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 * System.Threading.Interlocked
 * System.Threading.ThreadPool
 * System.Threading.EventWaitHandle
-* 비동기 호출
-* System.Delegate의 비동기 호출
+* 비동기 호출: I/O 연산이 끝날 때까지 차단되지 않으므로 non-blocking 호출이라고도 함
+* System.Delegate의 비동기 호출: 일반 메서드에 대해서도 비동기 호출을 할 수 있는 수단 (C# 5.0의 async/await 구문이 제공되면서 거의 사용하지 않게 됨)
 
 ### 네트워크 통신
 
@@ -275,7 +275,7 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 * 마이크로소프트 SQL 서버
 * ADO.NET 데이터 제공자
 * 데이터 컨테이너
-* 데이터베이스 트랜잭션
+* 데이터베이스 트랜잭션: using 키워드를 이용해 트랜잭션을 begin하고 마지막에 commit 해야 함
 
 ### 리플렉션
 
