@@ -291,6 +291,87 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 ## C# 2.0
 
+### 제네릭
+
+* 예를 들어, int와 같은 프리미티브 타입인 객체를 ArrayList와 같은 컬렉션 객체에 담을 경우 박싱/언박싱으로 인해 성능 저하가 발생한다.
+  - 박싱/언박싱 문제: int 타입 <-> object 타입 식으로 잦은 형 변환이 발생하는 문제
+  - 제네릭은 C++의 template과 유사한 개념이다.
+  - ArrayList를 보완한 List<T> 타입이 도입됨: 여기서 T는 타입으로 대체할 수 있다.
+  - 구체적인 프리미티브 타입을 지정함으로써 박싱/언박싱 문제가 해결된다.
+  - 제네릭 클래스, 제네릭 메서드가 있다.
+
+* 제네릭 메서드의 경우, 형식 파라미터에 제약 조건을 걸 수 있다.
+  - ```
+    public class MyClass<T> where T: ICollection
+    public class MyType<T> where T: ICollection, IConvertible
+    public class Dict<K, V> where K: ICollection
+                            where V: IComparable
+    ```
+  - where 키워드를 사용해 형식 파라미터가 따라야 할 제약 조건을 지정할 수 있다.
+  - 위의 경우 외에도 struct (값 형식), class (참조 형식), new() (기본 생성자 필수 포함), U (U 타입 인수) 키워드 등을 이용해 특별한 제약 조건을 걸 수 있음 (where T: [키워드])
+
+* BCL에 적용된 제네릭은 다음과 같다. (가능하면 제네릭 버전 컬렉션을 대신 사용하는 것을 권장함)
+  - ArrayList --> List<T>
+  - Hashtable --> Dictionary<TKey, TValue>
+  - SortedList --> SortedDictionary<TKey, TValue>
+  - Stack --> Stack<T>
+  - Queue --> Queue<T>
+
+* 제네릭 버전 인터페이스는 다음과 같다. (가능하면 제네릭 버전 인터페이스를 대신 사용하는 것을 권장함)
+  - IComparable --> IComparable<T>
+  - IComparer --> IComparer<T>
+  - IEnumerable --> IEnumerable<T>
+  - IEnumerator --> IEnumerator<T>
+  - ICollection --> ICollection<T>
+
+### ?? 연산자 (null 병합 연산자)
+
+* 피연산자1 ?? 피연산자2
+  - 참조 형식의 피연산자1이 null이 아니라면 그 값을 그대로 반환하고, null이라면 피연산자2의 값을 반환한다.
+
+### default 예약어
+
+* 일반적인 변수의 경우, 값 형식은 0으로 참조 형식은 null로 초기화된다.
+
+* 그러나 제네릭 형식의 파라밑로 전달된 경우에는 미리 타입을 알 수 없으므로 초기값을 결정할 수 없다.
+  - default 예약어를 사용하면 컴파일러가 T 형식에 따라 자동으로 초기값을 결정할 수 있도록 해준다.
+  - default 예약어는 타입을 인자로 받기 때문에 임의로 타입을 지정하는 방식으로도 사용할 수 있다.
+
+### yield return/break
+
+* yield 문법은 IEnumerable/IEnumerator로 구현한 코드에 대한 간편 표기법이라고 볼 수 있다.
+  - yield return: 리턴할 때 위치를 기억해 뒀다가 다음에 호출될 때 마지막 yield return 문이 호출됐던 코드 다음 줄부터 실행이 재개된다.
+  - yield break: 열거문이 제대로 작동하도록 루프 수행 후 열거를 중지하는 역할을 한다.
+  - yield 문법이 적용된 코드는 그대로 실행되는 것이 아니라 C# 컴파일러가 내부적으로 yield 문이 사용된 메서드를 컴파일 시에 IEnumerable이 적용된 것과 같은 코드로 치환한다.
+  - 이것은 필수 문법이 아니며, 알아두면 코드를 좀 더 간결하게 작성하는 데 도움이 된다.
+
+### partial 클래스
+
+* partial class 키워드를 사용하면 클래스 정의를 나누어서 할 수 있다.
+  - 클래스 정의가 나뉜 코드는 한 파일에 있어도 되고 다른 파일로 나누는 것도 가능하지만 반드시 같은 프로젝트에서 컴파일해야 한다.
+  - C# 컴파일러가 빌드 시에 같은 프로젝트에 있는 partial 클래스를 하나로 모아 단일 클래스로 빌드한다.
+  - 이 기법은 윈도우 응용 프로그램, 웹 응용 프로그램 개발 시에 주로 사용한다고 한다.
+
+### nullable 형식
+
+* nullable 타입: System.Nullable<T> 구조체
+  - 일반적인 값 형식에 대해 null 표현이 가능하게 하는 역할을 한다.
+  - double? == Nullable<double>
+  - hasValue 속성: 값이 할당되어 있으면 True, 할당되어 있지 않으면 False
+  - Value: hasValue가 true일 경우 유효한 값이 들어 있다.
+
+### 익명 메서드
+
+* 이름이 없는 메서드로서 델리게이트에 전달되는 메서드가 1회용일 때 유용하게 사용된다.
+  - 함수 이름 대신 delegate 키워드를 사용하여 함수 정의를 넣어서 인자로 넘겨준다.
+  - 이 문법은 간편 표기법으로 C# 컴파일러가 내부적으로 빌드 시점에 중복되지 않을 특별한 문자열을 하나 생성해 메서드의 이름으로 사용하고 delegate 키워드 다음의 코드를 분리해 해당 메서드의 본체로 넣는다.
+
+### 정적 클래스
+
+* 클래스의 정의에 static 키워드를 사용하여 정의된 정적 클래스는 오직 정적 멤버만을 내부에 포함할 수 있다.
+  - BCL 라이브러리에 포함된 System.Math 타입이 대표적이다.
+  - Math 타입 클래스는 인스턴스를 여러 개 만들 필요가 없기 때문이다.
+
 ## C# 3.0
 
 ## C# 4.0
