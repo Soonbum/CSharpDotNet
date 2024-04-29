@@ -231,8 +231,8 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 * System.BitConverter
 * System.IO.MemoryStream
-* System.IO.StreamWriter / System.IO.StreamReader
-* System.IO/BinaryWriter / System.IO/BinaryReader
+* System.IO.StreamWriter / System.IO.StreamReader: 스트림에 문자열 데이터를 읽고 쓰는 데 유용함
+* System.IO.BinaryWriter / System.IO.BinaryReader: 스트림에 이진 데이터를 읽고 쓰는 데 유용함
 * System.Xml.Serialization.XmlSerializer
 * System.Text.Json.JsonSerializer
 
