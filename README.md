@@ -529,23 +529,117 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 ### 자동 구현 속성의 초기화 구문 추가
 
-### 표현식을 이용한 메서드, 속성 및 인덱서 정의
+* C# 3.0의 "자동 구현 속성"을 사용한 경우, 초기값을 부여하려면 별도로 생성자 등의 메서드를 구현해야만 했다.
+  - C# 6.0에서는 자동 구현 속성 초기화 구문을 제공하여 속성 정의 구문에서 직접 기본값을 지정할 수 있게 하였다.
+  - ```
+    class Person
+    {
+        public string Name { get; set; } = "Jane";    // set을 제거하면 읽기 전용 속성이 된다.
+    }
+    ```
+
+### 표현식(람다식)을 이용한 메서드, 속성 및 인덱서 정의
+
+* 메서드가 식(expression)으로 이루어진 경우 간략하게 표현식으로 구현할 수 있다.
+  - `public Vector Move(double dx, double dy) => new Vector(x + dx, y + dy);`
+  - `public void PrintIt() => Console.WriteLine(this);`
+  - `public override string ToString() => string.Format("x = {0}, y = {1}", x, y);`
+
+* 속성(프로퍼티) 정의에도 표현식을 적용할 수 있다.
+  - `public double Angle => Math.Atan2(y, x);`
+  - 단, 속성 정의에 대해 람다 식을 구현하면 읽기 전용 필드가 된다.
+
+* 인덱서 구문에도 표현식을 적용할 수 있다.
+  - `static double RadianToDegree(double angle) => angle * (180.0 / Math.PI);`
+  - 속성(프로퍼티)과 마찬가지로 읽기 전용 인덱서로만 동작하게 된다.
+
+* 생성자/종료자, 이벤트의 add/remove 접근자의 경우 메서드이기는 하지만 표현식을 이용한 구현은 불가능하다.
 
 ### using static 구문을 이용한 타입명 생략
 
+* 기존에는 static 멤버를 사용할 때 반드시 타입명과 함께 써야 했다.
+  - `Console.WriteLine("문자열 출력");`
+ 
+* 그러나 C# 6.0부터는 자주 사용하는 타입의 전체 이름(FQDN)을 using static으로 선언해 두면, 타입명을 생략할 수 있게 되었다.
+  - ```
+    using static System.Console;
+    ...
+    WriteLine("문자열 출력");
+    ```
+
+* 단, C# 3.0에 도입된 "확장 메서드" 기능의 경우에도 static 키워드를 사용하기 때문에 문법적 모호성 문제로 using static 적용을 받지 않으므로 타입명을 생략하면 오류가 발생한다.
+
 ### null 조건 연산자
+
+* null 조건 연산자: 참조 변수의 값이 null이라면 그대로 null을 리턴하고, null이 아니라면 지정된 멤버를 호출한다.
+  - 이것을 잘 활용하면 null 값을 확인하는 if 문 사용을 대폭 줄일 수 있다.
+  - `list?.Count`: list가 null이 아닐 경우 list.Count 멤버 변수의 값을 리턴하고, null이면 null을 리턴한다.
 
 ### 문자열 내에 식(expression) 포함
 
+* 기존에는 문자열과 변수의 값을 조합해서 출력하려면 다음 방법을 사용해야 했다.
+  - `return "이름: " + Name + ", 나이: " + Age;`
+  - `return string.Format("이름: {0}, 나이: {1}", Name, Age);  // string.Format을 이용한 방법`
+
+* C# 6.0에서는 string.Format을 사용하지 않고도 다음과 같이 표현할 수 있다.
+  - `return $"이름: {Name}, 나이: {Age}";`
+  - 만약 중괄호를 출력하고 싶으면 두 번 연이어 입력해야 한다. (`return $"{{이름: {Name}, 나이: {Age}}}";`)
+
 ### nameof 연산자
+
+* C# 코드에 사용된 식별자를 이름 그대로 출력하고 싶을 때 다음과 같이 하면 된다.
+  - `$"{nameof(name)} == {name}"`
+  - 코드 내에서 식별자 이름을 하드코딩할 필요가 없게 되었다.
+  - 리플렉션은 코드가 실행되어야 이름을 구할 수 있지만, nameof는 C# 6.0 컴파일러가 컴파일 시점에 문자열로 직접 치환해 주므로 실행 시점에 부하가 없다.
 
 ### Dictionary 타입의 인덱스 초기화
 
+* 컬렉션 Dictionary 타입의 기존 초기화 문법은 다음과 같다.
+  - ```
+    var weekends = new Dictionary<int, string>
+    {
+        { 0, "Sunday" },
+        { 6, "Saturday" },
+    };
+    ```
+
+* C# 6.0의 컬렉션 Dictionary 타입의 초기화 문법은 키/값 개념에 맞게 직관적으로 바뀌었다.
+  - ```
+    var weekends = new Dictionary<int, string>
+    {
+        [0] = "Sunday",
+        [6] = "Saturday",
+    };
+    ```
+  - 참고로 키 값이 문자열이면 `["Key"] = ...` 식으로 입력하면 된다.
+
 ### 예외 필터
+
+* 비주얼 베이직, F# 언어에서 지원하던 예외 필터를 사용할 수 있게 되었다.
+  - ```
+    try
+    {
+        // ...[코드]...
+    } catch (예외_타입 e) when (조건식)
+    {
+        // ...[코드]...
+    }
+    ```
+  - catch에 지정된 예외_타입에 속하는 예외가 try 블록 내에서 발생했을 때, 조건식이 true로 평가된 경우에만 해당 예외 처리기가 선택된다.
+  - 조건식에는 메서드도 들어갈 수 있다.
+  - 기존 예외 처리 구문의 경우, 동일한 예외 타입의 catch 구문을 여러 개 둘 수 없었지만, 예외 필터를 사용하면 이것이 허용된다.
 
 ### 컬렉션 초기화 구문에 확장 메서드로 정의한 Add 지원
 
+* "컬렉션 초기화"에서 설명한 구문이 컴파일되려면 ICollection<T> 인터페이스를 구현해야 한다.
+  - C# 6.0에서는 ICollection<T> 인터페이스가 없다면 Add 메서드가 확장 메서드로도 구현되어 있는지 다시 한 번 더 찾는 기능을 추가했다.
+
 ### 기타 개선 사항
+
+* C# 5.0에서 C# 6.0으로 바뀌면서 개선된 기능은 다음과 같다.
+  - catch/finally 블록 내에서 await 사용 가능
+  - #pragma의 'CS' 접두사 지원
+  - 재정의된 메서드의 선택 정확도를 향상
 
 ## C# 7.0
 
