@@ -776,11 +776,30 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 ### Main 메서드에 async 예약어 허용
 
+* C# 7.1부터는 Main 메서드에도 async를 허용하였다.
+  - 람다 식으로도 Main 메서드를 구현할 수 있다.
+
+* 가능한 Main 메서드 정의는 다음과 같다.
+  - `static async Task Main()`
+  - `static async Task Main(string[])`
+  - `static async Task<int> Main()`
+  - `static async Task<int> Main(string[])`
+
 ### default 리터럴 추가
+
+* C# 7.1부터는 default 예약어가 타입 추론이 가능해져서 리터럴 형식으로 쓸 수 있게 바뀐다.
+  - C# 컴파일러 입장에서는 default 대상이 되는 타입을 추론할 수 있으므로 굳이 타입을 지정할 필요가 없다.
+  - 제네릭 인자에도 default 리터럴을 쓸 수 있다.
 
 ### 타입 추론을 통한 튜플의 변수명 자동 지정
 
+* C# 7.1부터는 튜플의 변수명에 대해서도 타입 추론을 활용해 사용의 편의성을 높였다.
+
 ### 기타 개선 사항
+
+* C# 7.0에서 C# 7.1으로 바뀌면서 개선된 기능은 다음과 같다.
+  - 패턴 매칭 - 제네릭 추가
+  - 참조 전용 어셈블리 (Ref Assemblies)
 
 ## C# 7.2
 
