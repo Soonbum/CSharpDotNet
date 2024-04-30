@@ -489,9 +489,21 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
   - var 예약어는 빌드 시점에 초기값과 대응되는 타입으로 치환되는 반명, dynamic 변수는 컴파일 시점에 타입을 결정하지 않고 해당 프로그램이 실행되는 시점에 타입을 결정한다.
   - dynamic 예약어는 내부적으로는 CallSite.Target 메서드를 사용하는 간편 표기법에 불과하다.
 
-...
+* dynamic 예약어가 도입됨에 따라 다음 장점을 갖추게 되었다.
+  - 리플렉션 개선
+  - 덕 타이핑: 동적 언어에서 제공하는 기능으로 서로 다른 타입의 동일한 프로퍼티/메서드를 호출할 수 있게 해준다.
+  - 동적 언어와의 타입 연동
 
 ### 동시성 컬렉션
+
+* 다중 스레드에서 컬렉션에 접근할 때 동기화를 적용하지 않으면 오류가 발생한다.
+  - 일일이 동기화 코드를 추가하는 것은 매우 번거로운 일이다.
+  - 그래서 BCL에서는 다중 스레드에서 쉽게 이용할 수 있는 전용 컬렉션을 System.Collections.Concurrent에서 제공하고 있다.
+    * BlockingCollection<T>: Producer/Consumer 패턴에서 사용하기 좋은 컬렉션
+    * ConcurrentBag<T>: List<T>의 순서가 지켜지지 않는 동시성 버전
+    * ConcurrentDictionary<TKey, TValue>: Dictionary<TKey, TValue>의 동시성 버전
+    * ConcurrentQueue<T>: Queue<T>의 동시성 버전
+    * ConcurrentStack<T>: Stack<T>의 동시성 버전
 
 ## C# 5.0
 
