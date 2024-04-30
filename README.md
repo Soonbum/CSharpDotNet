@@ -63,7 +63,7 @@
 4.0 | C# 4.0 - 동적 언어의 장점 흡수 | 지연 바인딩, 선택적 파라미터, 명명된 인자, COM 지원 확장
 4.5 | C# 5.0 - 비동기 호출 추가 | async/await 비동기 예약어
 4.6 | C# 6.0 - 간편 표기 문법 보강 | 프레임워크와 컴파일러의 분리, 다수의 간편 표기 문법
-4.7 ~ 4.7.2, 4.8 | C# 7.0 ~ 7.1 - 패턴 매칭, C# 7.2 - 구조체 성능 향상, C# 7.3 - 문법 보강 | 패턴 매칭, 튜플, Span<T>
+4.7 ~ 4.7.2, 4.8 | C# 7.0 ~ 7.1 - 패턴 매칭, C# 7.2 - 구조체 성능 향상, C# 7.3 - 문법 보강 | 패턴 매칭, 튜플, `Span<T>`
 .NET Core 3.0 | C# 8.0 - 문법 보강 | 비동기 스트림, 인덱스/범위 연산자, 기본 인터페이스 메서드, 다수의 간편 표기 문법
 .NET 5 | C# 9.0 - 문법 보강 | 레코드, 함수 포인터, 모듈 이니셜라이저, 최상위 문
 .NET 6 | C# 10 - 문법 보강 | record의 구조체 지원, 다수의 세부 문법 개선
@@ -296,7 +296,7 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 * 예를 들어, int와 같은 프리미티브 타입인 객체를 ArrayList와 같은 컬렉션 객체에 담을 경우 박싱/언박싱으로 인해 성능 저하가 발생한다.
   - 박싱/언박싱 문제: int 타입 <-> object 타입 식으로 잦은 형 변환이 발생하는 문제
   - 제네릭은 C++의 template과 유사한 개념이다.
-  - ArrayList를 보완한 List<T> 타입이 도입됨: 여기서 T는 타입으로 대체할 수 있다.
+  - `ArrayList`를 보완한 `List<T>` 타입이 도입됨: 여기서 T는 타입으로 대체할 수 있다.
   - 구체적인 프리미티브 타입을 지정함으로써 박싱/언박싱 문제가 해결된다.
   - 제네릭 클래스, 제네릭 메서드가 있다.
 
@@ -311,18 +311,18 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
   - 위의 경우 외에도 struct (값 형식), class (참조 형식), new() (기본 생성자 필수 포함), U (U 타입 인수) 키워드 등을 이용해 특별한 제약 조건을 걸 수 있음 (where T: [키워드])
 
 * BCL에 적용된 제네릭은 다음과 같다. (가능하면 제네릭 버전 컬렉션을 대신 사용하는 것을 권장함)
-  - ArrayList --> List<T>
-  - Hashtable --> Dictionary<TKey, TValue>
-  - SortedList --> SortedDictionary<TKey, TValue>
-  - Stack --> Stack<T>
-  - Queue --> Queue<T>
+  - `ArrayList --> List<T>`
+  - `Hashtable --> Dictionary<TKey, TValue>`
+  - `SortedList --> SortedDictionary<TKey, TValue>`
+  - `Stack --> Stack<T>`
+  - `Queue --> Queue<T>`
 
 * 제네릭 버전 인터페이스는 다음과 같다. (가능하면 제네릭 버전 인터페이스를 대신 사용하는 것을 권장함)
-  - IComparable --> IComparable<T>
-  - IComparer --> IComparer<T>
-  - IEnumerable --> IEnumerable<T>
-  - IEnumerator --> IEnumerator<T>
-  - ICollection --> ICollection<T>
+  - `IComparable --> IComparable<T>`
+  - `IComparer --> IComparer<T>`
+  - `IEnumerable --> IEnumerable<T>`
+  - `IEnumerator --> IEnumerator<T>`
+  - `ICollection --> ICollection<T>`
 
 ### ?? 연산자 (null 병합 연산자)
 
@@ -354,7 +354,7 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 ### nullable 형식
 
-* nullable 타입: System.Nullable<T> 구조체
+* nullable 타입: `System.Nullable<T>` 구조체
   - 일반적인 값 형식에 대해 null 표현이 가능하게 하는 역할을 한다.
   - double? == Nullable<double>
   - hasValue 속성: 값이 할당되어 있으면 True, 할당되어 있지 않으면 False
@@ -418,7 +418,7 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 * 배열 변수처럼 컬렉션 객체를 초기화할 수 있는 문법이 추가되었다.
   - `List<int> numbers = new List List<int> { 0, 1, 2, 3, 4 };  // Add 메서드를 사용하지 않아도 됨`
-  - 단, 해당 컬렉션 타입이 반드시 ICollection<T> 인터페이스를 구현해야 한다.
+  - 단, 해당 컬렉션 타입이 반드시 `ICollection<T>` 인터페이스를 구현해야 한다.
 
 ### 익명 타입
 
@@ -465,7 +465,7 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 * LINQ (Language Integrated Query)
   - C# 및 VB.NET 컴파일러에서 자주 사용되는 정보의 선택/열거 작업을 일관된 방법으로 다루기 위해 기존 문법을 확장시킨 것이다.
   - 쿼리 문법은 SQL 쿼리의 SELECT 구문과 유사하다.
-  - 쿼리 문은 IEnumerable<T> 타입으로 저장된다.
+  - 쿼리 문은 `IEnumerable<T>` 타입으로 저장된다.
   - 이것도 간편 표기법에 지나지 않으며, C# 컴파일러에 의해 빌드 시에 원래의 확장 메서드를 사용하는 코드로 변경되어 컴파일된다.
 
 ## C# 4.0
@@ -499,11 +499,11 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 * 다중 스레드에서 컬렉션에 접근할 때 동기화를 적용하지 않으면 오류가 발생한다.
   - 일일이 동기화 코드를 추가하는 것은 매우 번거로운 일이다.
   - 그래서 BCL에서는 다중 스레드에서 쉽게 이용할 수 있는 전용 컬렉션을 System.Collections.Concurrent에서 제공하고 있다.
-    * BlockingCollection<T>: Producer/Consumer 패턴에서 사용하기 좋은 컬렉션
-    * ConcurrentBag<T>: List<T>의 순서가 지켜지지 않는 동시성 버전
-    * ConcurrentDictionary<TKey, TValue>: Dictionary<TKey, TValue>의 동시성 버전
-    * ConcurrentQueue<T>: Queue<T>의 동시성 버전
-    * ConcurrentStack<T>: Stack<T>의 동시성 버전
+    * `BlockingCollection<T>`: Producer/Consumer 패턴에서 사용하기 좋은 컬렉션
+    * `ConcurrentBag<T>`: `List<T>`의 순서가 지켜지지 않는 동시성 버전
+    * `ConcurrentDictionary<TKey, TValue>`: `Dictionary<TKey, TValue>`의 동시성 버전
+    * `ConcurrentQueue<T>`: `Queue<T>`의 동시성 버전
+    * `ConcurrentStack<T>`: `Stack<T>`의 동시성 버전
 
 ## C# 5.0
 
@@ -631,8 +631,8 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 ### 컬렉션 초기화 구문에 확장 메서드로 정의한 Add 지원
 
-* "컬렉션 초기화"에서 설명한 구문이 컴파일되려면 ICollection<T> 인터페이스를 구현해야 한다.
-  - C# 6.0에서는 ICollection<T> 인터페이스가 없다면 Add 메서드가 확장 메서드로도 구현되어 있는지 다시 한 번 더 찾는 기능을 추가했다.
+* "컬렉션 초기화"에서 설명한 구문이 컴파일되려면 `ICollection<T>` 인터페이스를 구현해야 한다.
+  - C# 6.0에서는 `ICollection<T>` 인터페이스가 없다면 Add 메서드가 확장 메서드로도 구현되어 있는지 다시 한 번 더 찾는 기능을 추가했다.
 
 ### 기타 개선 사항
 
@@ -683,7 +683,7 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
 
 ### 스택에만 생성할 수 있는 값 타입 지원 - ref struct
 
-### 신규 추가 타입: Span<T>
+### 신규 추가 타입: `Span<T>`
 
 ### 3항 연산자에 ref 지원
 
