@@ -108,6 +108,7 @@
 
 * 일반적인 애트리뷰트: 소스 외의 정보이며 메타데이터 정보에 포함됨, 프로그램에 영향을 끼치지 않으나 개발자가 정보를 남길 수 있음
   - System.Attribute로부터 상속 받은 클래스이다.
+  - 애트리뷰트: 주석과 달리 컴파일러에게 코드에 대한 정보를 제공하기 위한 기능이다.
   - 형태는 다음과 같다: [AuthorAttribute], [Author], [Author()], [Author("Anders")], [Author("Anders", Version = 1)], ...
   - 생성자, 프로퍼티를 이용해 값을 지정할 수도 있다.
   - Reflection 기술과 함께 응용하여 사용될 수 있다.
@@ -939,32 +940,117 @@ All | 기본값 | AttributeTargets에 정의된 모든 것
   - null일 수 있다면 해당 인스턴스를 null 가능한 타입이라고 명시한다.
     * `참조_타입?`: 참조_타입에 물음표를 붙여 인스턴스가 null일 수도 있음을 명시한다.
     * 이렇게 하면 컴파일러가 해당 멤버가 사용된 코드를 검사해 null 가능성이 있다고 경고를 발생시킨다.
+  - 개발자가 명시적으로 null 체크를 위한 메서드를 만들었다면, C# 컴파일러에 의해 null 체크에 해당하는 코드라고 인식하도록 NotNullWhen 애트리뷰트를 적용할 수 있다.
+    * `static bool IsNull([NotNullWhen(false)] string? value)`: 이 경우 IsNull 메서드가 false를 리턴하면 null이라고 C# 컴파일러가 인지함
+    * NotNullWhen 애트리뷰트 외에도 null 처리 관련 힌트를 부여하는 애트리뷰트가 다수 존재한다: AllowNull, DisableNull, DoesNotReturn, DoesNotReturnIf, MaybeNull, MaybeNullWhen, NotNullIfNotNull
 
-...
+* null 체크 코드를 추가하지 않고 null 자체를 개발자가 감수하기로 했다면 null 포기 연산자를 사용하여 #nullable enable 경고를 무시할 수도 있다.
+  - `return person.Name!.Length;  // 이 경우 person.Name의 값이 nullable이어도 경고하지 않음`
+
+* nullable 문맥 제어
+  - 주석 문맥 (annotation context)
+    * enable
+      - 모든 참조 타입은 null이 가능하지 않은 참조 타입으로 취급하고 따라서 null 예외 없이 안전하게 접근 가능
+      - null 가능한 참조 타입(예: string?)을 사용할 수 있고, 해당 변수에 접근할 때 정적 분석기에 의해 null일 수 있다면 경고 발생
+    * disable
+      - null 가능한 참조 타입을 사용할 수 없음(참조 타입에 ?를 붙이면 경고 발생)
+      - 모든 참조 변수는 null일 수 있음
+      - 참조 변수를 접근해도 경고가 발생하지 않음
+  - 경고 문맥 (warning context)
+    * enable
+      - null 접근으로 분석된 경우 경고를 발생시킨다. 주석 문맥의 활성화와 상관 없이 정적 분석기의 판정에 따른다.
+    * disable
+      - 경고를 발생시키지 않는다.
+
+* 각각의 문맥 제어는 #nullable과 #pragma warning 지시자를 이용해 켜고 끌 수 있지만 매번 소스코드에 지정하는 것이 불편하므로 프로젝트 파일의 Nullable 노드를 통해 전역적으로 설정하는 것이 가능하다.
+  - ```
+    <Project Sdk="Microsoft.NET.Sdk">
+      <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+      </PropertyGroup>
+    </Project>
+    ```
+  - 주석 | 경고 | 지시자 | 프로젝트 설정
+    ---- | --- | ------ | ---------------
+    enable | enable | #nullable enable | `<Nullable>enable</Nullable>`
+    enable | disable | (불가능) | `<Nullable>annotations</Nullable>`
+    dsiable | enable | (불가능) | `<Nullable>warnings</Nullable>`
+    disable | disable | #nullable disable | `<Nullable>disable</Nullable>`
 
 ### 비동기 스트림
 
+* 여기서 비동기 스트림은 IEnumerable/IEnumerator의 비동기 버전이다.
+  - 메서드가 async를 지원하더라도 동기 버전 IEnumerable/IEnumerator를 사용하면 성능 저하가 발생한다.
+  - 따라서 비동기 버전 IEnumerable/IEnumerator인 IAsyncEnumerable/IAsyncEnumerator가 추가되었다.
+
 ### 새로운 연산자 - 인덱스, 범위
+
+* C# 8.0에 새로 추가된 2개의 연산자가 있다.
+  - 연산자 | 문법 | 의미
+    ------ | --- | -----
+    ^ | ^n | 인덱스 연산자로서 뒤에서부터 n번째 위치를 의미함 (주의: 마지막 위치가 1에서 시작함)
+    .. | n1..n2 | 범위 연산자로서 n1은 포함하고 n2는 포함하지 않는 범위를 지정한다. 수학적으로 표현하면 [n1, n2)와 같다. n1, n2은 생략 가능하다.
 
 ### 간결해진 using 선언
 
+* IDisposable 인터페이스를 구현한 타입의 Dispose 메서드를 finally 구문에서 호출하도록 변경해 주는 using 문은 사용하기 편리하지만 블록이 추가되어 들여쓰기 구간이 발생한다.
+  - C# 8.0에서는 들여쓰기를 생략할 수 있도록 개선된 문법을 제공한다.
+  - 이 경우 using 블록은 using에 사용된 변수 선언을 기준으로 가장 가까운 바깥 블록까지 적용된다.
+
 ### Dispose 호출이 가능한 ref struct
+
+* "스택에만 생성할 수 있는 값 타입 지원 - ref struct"에서 ref struct 특성으로 인해 인터페이스를 구현할 수 없고 이로 인해 using 문에 사용할 수 없었다. (C# 7.2)
+  - 그래서 Dispose가 필요한 작업인데도 IDisposable을 구현할 수 없어 using 문에 사용하는 것이 불가능하다.
+  - C# 8.0에서는 특별히 ref struct 타입에 한해서만 public void Dispose() 메서드를 포함한 경우 using 문에서 사용할 수 있도록 허용한다.
 
 ### 정적 로컬 함수
 
+* "로컬 함수"는 static 함수를 구현할 수 없었지만 C# 8.0에서 제약이 풀렸다.
+
 ### 패턴 매칭 개선
+
+* 패턴 매칭에 대한 지원이 추가되었다.
+  - switch 식
+  - 프로퍼티 패턴
+  - 튜플 패턴
+  - 위치 패턴
+  - 재귀 패턴
 
 ### 기본 인터페이스 메서드
 
+* C# 8.0에서는 인터페이스의 메서드에 구현 코드를 추가할 수 있게 되었다.
+  - 유의할 점: 상속 받은 클래스에서 기본 인터페이스 메서드를 구현하지 않았다면, 그 메서드는 반드시 인터페이스로 형 변환해서 호출해야만 한다.
+  - 다중 상속에서 발생하는 다이아몬드 문제에 대한 모호한 호출 문제를 해결할 수 있다.
+
 ### ??= (널 병합 할당 연산자)
+
+* `변수 ??= 기본값`: 참조 객체인 변수의 값이 null이면 기본값을 변수에 대입한다.
+  - 이것은 ??와 = 연산자의 복합 연산자에 불과하다. (`txt = txt ?? "test";` 이것은 `txt ??= "test";`와 같다)
 
 ### 문자열 @, $ 접두사 혼합 지원
 
+* C# 6.0에 추가된 $ 접두사는 문자열 내에 식을 사용하도록 허용한다.
+  - 여기서 @ 접두사와 혼용하는 경우 반드시 $@ 순서로 작성해야 한다.
+  - C# 8.0부터는 제약이 풀려서 순서에 상관없이 정상적으로 컴파일된다.
+
 ### 기본 식으로 바뀐 stackalloc
+
+* "스택을 이용한 값 형식 배열: stackalloc"에서 본 stackalloc 키워드는 지역 변수를 초기화하는 구문에만 한정되어 있었다.
+  - C# 7.2의 `Span<T>` 타입이 나오면서 좀 더 자유롭게 사용할 수 있어야 한다는 요구사항이 반영되어 stackalloc은 식(expression)이 되었다.
 
 ### 제네릭 구조체의 unmanaged 지원
 
+* 제네릭 구조체의 경우 내부 필드가 참조 객체를 포함하는지 여부와 상관없이 포인터 관련 연산을 지원하지 않았다.
+  - C# 8.0부터는 제네릭 구조체에도 포인터 관련 연산이 가능해졌다.
+  - 비관리 메모리로 할당 받은 경우 GC에 부하를 주지 않는다는 장점이 있다.
+
 ### 구조체의 읽기 전용 메서드
+
+* "읽기 전용(readonly) 구조체"에서는 방어 복사본 문제로 인한 성능 손실을 없애기 위해 구조체 내의 모든 필드를 readonly로 바꾸도록 강제했다.
+  - 그러나 원하는 메서드에 대해서만 상태 변경을 하지 않는다고 보장하면 구조체 자체의 정의를 readonly struct로 만들지 않아도 된다.
+  - C# 8.0에서는 읽기 전용 메서드를 추가하여 구조체 전체를 읽기 전용으로 강제하지 않아도 되게끔 조건을 완화하였다.
 
 ## C# 9.0
 
